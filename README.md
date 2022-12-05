@@ -13,22 +13,11 @@ Features
 Installation
 ------------
 
-1.  Clone the repository
-
-Copy code
-
+1. Clone the repository
 `git clone https://github.com/user/diabetes-prediction-app.git`
-
-1.  Install the required packages
-
-Copy code
-
+2. Install the required packages
 `pip install -r requirements.txt`
-
-1.  Run the app
-
-Copy code
-
+3. Run the app
 `python app.py`
 
 Usage
