@@ -4,7 +4,7 @@
 
 <!-- Starts image section -->
 <div class="row justify-content-md-left mb-4">
-  <h2 class='text-dark'>Predict Diabetes</h2>
+  <h3 class='text-dark'>Diabetes Predictor</h3>
 </div>
 
 <!-- Starts form section -->
@@ -18,12 +18,14 @@
           <option value="knn">KNN</option>
           <option value="naive">Naive Bayes</option>
         </select>
+        <span class="text-muted text-sm">Pilih Algoritma</span>
       </div>
     </div>
     <div class="form-group row">
       <label class="control-label col-sm-2" for="preg">Pregnancies:</label>
       <div class="col-sm-10">
         <input type="text" class="form-control" id="preg" placeholder="Enter Pregnant" name="preg">
+        <span class="text-muted text-sm">Jumlah kali hamil</span>
       </div>
     </div>
 
@@ -31,6 +33,7 @@
       <label class="control-label col-sm-2" for="glucose">Plasma Glucose:</label>
       <div class="col-sm-10">
         <input type="text" class="form-control" id="glucose" placeholder="Enter Plasma Glucose" name="glucose">
+        <span class="text-muted text-sm">Kadar gula darah 2 jam dalam tes toleransi glukosa oral</span>
       </div>
     </div>
 
@@ -38,6 +41,7 @@
       <label class="control-label col-sm-2" for="bp">Blood Pressure:</label>
       <div class="col-sm-10">
         <input type="text" class="form-control" id="bp" placeholder="Enter Blood Pressure" name="bp">
+        <span class="text-muted text-sm">Tekanan darah diastolik (mm Hg)</span>
       </div>
     </div>
 
@@ -45,6 +49,7 @@
       <label class="control-label col-sm-2" for="st">Skin Thickness:</label>
       <div class="col-sm-10">
         <input type="text" class="form-control" id="st" placeholder="Enter Skin Thickness" name="st">
+        <span class="text-muted text-sm">Ketebalan lipatan kulit pada triceps (mm)</span>
       </div>
     </div>
 
@@ -52,6 +57,7 @@
       <label class="control-label col-sm-2" for="insulin">Insulin:</label>
       <div class="col-sm-10">
         <input type="text" class="form-control" id="insulin" placeholder="Enter Insulin" name="insulin">
+        <span class="text-muted text-sm">Insulin 2 jam (mu U / ml)</span>
       </div>
     </div>
 
@@ -60,6 +66,7 @@
       <label class="control-label col-sm-2" for="bmi">BMI:</label>
       <div class="col-sm-10">
         <input type="text" class="form-control" id="bmi" placeholder="Enter BMI" name="bmi">
+        <span class="text-muted text-sm">Indeks massa tubuh (berat dalam kg / (tinggi dalam m) ^ 2)</span>
       </div>
     </div>
 
@@ -68,6 +75,7 @@
       <label class="control-label col-sm-2" for="dpf">Pedigree:</label>
       <div class="col-sm-10">
         <input type="text" class="form-control" id="dpf" placeholder="Enter Pedigree" name="dpf">
+        <span class="text-muted text-sm">Fungsi yang menilai seberapa dekat anggota keluarga dengan diabetes</span>
       </div>
     </div>
 
@@ -76,39 +84,36 @@
       <label class="control-label col-sm-2" for="age">Age:</label>
       <div class="col-sm-10">
         <input type="text" class="form-control" id="age" placeholder="Enter Age" name="age">
+        <span class="text-muted text-sm">Umur (tahun)</span>
       </div>
     </div>
 
     <!-- Starts Submit section -->
     <div class="form-group row">
       <div class="col-sm-offset-2 col-sm-10">
-        <button type="submit" class="btn btn-outline-dark">Submit</button>
+        <button type="submit" class="btn btn-outline-dark">Predict!</button>
       </div>
     </div>
   </form>
   <!-- Ends form section -->
-
-
-  <div class="row justify-content-md-left mb-4 mt-5" id="result-panel">
-    <span class='h3 text-dark' id="result-text"></span>
-  </div>
 
 </div>
 
 
 {% endblock %}
 {% block script %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script>
   // Default value
   let algorithm = "knn";
-  let preg = 17;
-  let glucose = 120;
-  let blood_pressure = 80;
-  let skin_thickness = 30;
-  let insulin = 100;
-  let bmi = 30;
-  let pedigree = 0.5;
-  let age = 30;
+  let preg = 0;
+  let glucose = 179;
+  let blood_pressure = 50;
+  let skin_thickness = 36;
+  let insulin = 159;
+  let bmi = 37.8;
+  let pedigree = 0.455;
+  let age = 22;
 
   // init set value with vanilla js, document ready
   document.addEventListener("DOMContentLoaded", function (event) {
@@ -147,9 +152,6 @@
     formData.append("dpf", pedigree);
     formData.append("age", age);
 
-    // SHOW LOADING
-    document.getElementById("result-panel").style.display = "none";
-
     fetch("/predict", {
       method: "POST",
       headers: {
@@ -170,15 +172,18 @@
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
-        let text = "";
+        let text = "Data diatas <br><b>tidak memiliki kemungkinan terkena diabetes</b>";
+        let icon = "info"
         if(data.prediction == 1){
-          text = "Data diatas memiliki kemungkinan terkena diabetes";
-        }else{
-          text = "Data diatas tidak memiliki kemungkinan terkena diabetes";
+          text = "Data diatas memiliki <br><b>kemungkinan terkena diabetes</b>";
+          icon = "warning"
         }
-        document.getElementById("result-text").innerHTML = text;
-        document.getElementById("result-panel").style.display = "block";
+        Swal.fire({
+          title: "Hasil Prediksi",
+          html: text,
+          icon: icon,
+          confirmButtonText: "OK",
+        });
       });
   });
 
