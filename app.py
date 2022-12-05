@@ -1,15 +1,14 @@
-from flask import Flask, render_template, request, jsonify, redirect
+import os
+from flask import Flask, render_template, request, jsonify
 import joblib
+from flask_sslify import SSLify
 
 app = Flask(__name__)
 
+print(os.environ)
 
-@app.before_request
-def before_request():
-    if not request.is_secure:
-        url = request.url.replace('http://', 'https://', 1)
-        code = 301
-        return redirect(url, code=code)
+if 'DYNO' in os.environ:
+    sslify = SSLify(app)
 
 
 def diabetes_predict(algo, preg, glucose, bp, st, insulin, bmi, dpf, age):
