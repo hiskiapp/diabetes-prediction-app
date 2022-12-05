@@ -1,0 +1,186 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<!-- Starts image section -->
+<div class="row justify-content-md-center mb-4">
+  <h2 class='text-primary'>Predict Diabetes</h2>
+</div>
+
+<!-- Starts form section -->
+<div class="form-container ">
+  <form class="form-horizontal" action="/predict" method="post" id="result-form">
+    <!-- Select Algorithm: KNN, Naive Bayes -->
+    <div class="form-group row">
+      <label class="control-label col-sm-2" for="algo">Select Algorithm:</label>
+      <div class="col-sm-4">
+        <select class="form-control" id="algo" name="algo">
+          <option value="knn">KNN</option>
+          <option value="naive">Naive Bayes</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label class="control-label col-sm-2" for="preg">Pregnancies:</label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" id="preg" placeholder="Enter Pregnant" name="preg">
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label class="control-label col-sm-2" for="glucose">Plasma Glucose:</label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" id="glucose" placeholder="Enter Plasma Glucose" name="glucose">
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label class="control-label col-sm-2" for="bp">Blood Pressure:</label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" id="bp" placeholder="Enter Blood Pressure" name="bp">
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label class="control-label col-sm-2" for="st">Skin Thickness:</label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" id="st" placeholder="Enter Skin Thickness" name="st">
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label class="control-label col-sm-2" for="insulin">Insulin:</label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" id="insulin" placeholder="Enter Insulin" name="insulin">
+      </div>
+    </div>
+
+    <!-- Starts BMI section -->
+    <div class="form-group row">
+      <label class="control-label col-sm-2" for="bmi">BMI:</label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" id="bmi" placeholder="Enter BMI" name="bmi">
+      </div>
+    </div>
+
+    <!-- Starts Pedigree section -->
+    <div class="form-group row">
+      <label class="control-label col-sm-2" for="dpf">Pedigree:</label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" id="dpf" placeholder="Enter Pedigree" name="dpf">
+      </div>
+    </div>
+
+    <!-- Starts Age section -->
+    <div class="form-group row">
+      <label class="control-label col-sm-2" for="age">Age:</label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" id="age" placeholder="Enter Age" name="age">
+      </div>
+    </div>
+
+    <!-- Starts Submit section -->
+    <div class="form-group row">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </div>
+  </form>
+  <!-- Ends form section -->
+
+
+  <div class="row justify-content-md-left mb-4 mt-5" id="result-panel">
+    <span class='h3 text-primary' id="result-text"></span>
+  </div>
+
+</div>
+
+
+{% endblock %}
+{% block script %}
+<script>
+  // Default value
+  let algorithm = "knn";
+  let preg = 17;
+  let glucose = 120;
+  let blood_pressure = 80;
+  let skin_thickness = 30;
+  let insulin = 100;
+  let bmi = 30;
+  let pedigree = 0.5;
+  let age = 30;
+
+  // init set value with vanilla js, document ready
+  document.addEventListener("DOMContentLoaded", function (event) {
+    document.getElementById("algo").value = algorithm;
+    document.getElementById("preg").value = preg;
+    document.getElementById("glucose").value = glucose;
+    document.getElementById("bp").value = blood_pressure;
+    document.getElementById("st").value = skin_thickness;
+    document.getElementById("insulin").value = insulin;
+    document.getElementById("bmi").value = bmi;
+    document.getElementById("dpf").value = pedigree;
+    document.getElementById("age").value = age;
+  });
+
+  // fetch /predict when result-form submitted
+  document.getElementById("result-form").addEventListener("submit", function (event) {
+    event.preventDefault();
+    algorithm = document.getElementById("algo").value;
+    preg = document.getElementById("preg").value;
+    glucose = document.getElementById("glucose").value;
+    blood_pressure = document.getElementById("bp").value;
+    skin_thickness = document.getElementById("st").value;
+    insulin = document.getElementById("insulin").value;
+    bmi = document.getElementById("bmi").value;
+    pedigree = document.getElementById("dpf").value;
+    age = document.getElementById("age").value;
+
+    let formData = new FormData();
+    formData.append("algo", algorithm);
+    formData.append("preg", preg);
+    formData.append("glucose", glucose);
+    formData.append("bp", blood_pressure);
+    formData.append("st", skin_thickness);
+    formData.append("insulin", insulin);
+    formData.append("bmi", bmi);
+    formData.append("dpf", pedigree);
+    formData.append("age", age);
+
+    // SHOW LOADING
+    document.getElementById("result-panel").style.display = "none";
+
+    fetch("/predict", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        algo: algorithm,
+        preg: preg,
+        glucose: glucose,
+        bp: blood_pressure,
+        st: skin_thickness,
+        insulin: insulin,
+        bmi: bmi,
+        dpf: pedigree,
+        age: age,
+      }),
+      credentials: "same-origin",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        let text = "";
+        if(data.prediction == 1){
+          text = "Data diatas memiliki kemungkinan terkena diabetes";
+        }else{
+          text = "Data diatas tidak memiliki kemungkinan terkena diabetes";
+        }
+        document.getElementById("result-text").innerHTML = text;
+        document.getElementById("result-panel").style.display = "block";
+      });
+  });
+
+</script>
+{% endblock %}
