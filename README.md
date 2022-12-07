@@ -14,7 +14,7 @@ Installation
 ------------
 
 1. Clone the repository
-`git clone https://github.com/user/diabetes-prediction-app.git`
+`git clone https://github.com/hiskiapp/diabetes-prediction-app.git`
 2. Install the required packages
 `pip install -r requirements.txt`
 3. Run the app
@@ -41,4 +41,4 @@ If you want to contribute to this project, please follow the guidelines below:
 License
 -------
 
-This project is licensed under the MIT License. See the [LICENSE](https://chat.openai.com/LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
